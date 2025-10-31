@@ -1,0 +1,68 @@
+name: Testes raivosos do git-flow
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+      - develop
+
+permissions:
+  id-token: write
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Install git flow
+        run: |
+          wget https://github.com/gittower/git-flow-next/releases/download/v0.1.1/git-flow-next-v0.1.1-linux-amd64.tar.gz
+          tar xf git-flow-next-v0.1.1-linux-amd64.tar.gz
+          sudo mv git-flow-v0.1.1-linux-amd64 /usr/local/bin/git-flow
+
+      - name: Clone automations
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Git flow
+        run: |
+          set -ex
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          
+          git push --delete origin test-rc 2> /dev/null || true
+          git tag --delete test-rc 2> /dev/null || true
+
+          git flow init --defaults
+
+          git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*' --tags
+
+          git checkout -B develop origin/develop
+
+          git checkout -B master origin/master
+
+          # go back to develop and start release
+          git checkout develop
+          git flow release start test-rc
+          git push --set-upstream origin release/test-rc
+
+      - name: Finish git-flow release (non-interactive)
+        env:
+          GIT_MERGE_AUTOEDIT: no
+        run: |
+          set -ex
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          
+          git flow init --defaults
+
+          git checkout -B "release/test-rc" "origin/release/test-rc"
+
+          git flow release finish -n -m "release dynamo" "release/test-rc"
+
+          git push origin develop
+          git push origin master
+          git push --tags
+
