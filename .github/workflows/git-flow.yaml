@@ -37,8 +37,6 @@ jobs:
 
           git flow init --defaults
 
-          git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*' --tags
-
           git checkout -B develop origin/develop
 
           git checkout -B master origin/master
