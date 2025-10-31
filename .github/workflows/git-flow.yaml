@@ -49,6 +49,7 @@ jobs:
           git push --set-upstream origin release/test-rc
 
       - name: Finish git-flow release (non-interactive)
+        if: false
         env:
           GIT_MERGE_AUTOEDIT: no
         run: |
