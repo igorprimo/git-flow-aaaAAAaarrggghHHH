@@ -53,9 +53,8 @@ jobs:
           set -ex
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
-          git config gitflow.branch.master master
-          
-          git flow init --defaults
+
+          git flow init --defaults --main=master
 
           git checkout -B "release/test-rc" "origin/release/test-rc"
 
