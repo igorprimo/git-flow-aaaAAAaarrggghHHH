@@ -55,6 +55,7 @@ jobs:
           git config --global user.name "github-actions[bot]"
           
           git flow init --defaults
+          git config gitflow.branch.master master
 
           git checkout -B "release/test-rc" "origin/release/test-rc"
 
